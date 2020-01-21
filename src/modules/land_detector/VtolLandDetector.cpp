@@ -40,6 +40,7 @@
  */
 
 #include <drivers/drv_hrt.h>
+#include <matrix/math.hpp>
 
 #include "VtolLandDetector.h"
 
@@ -92,6 +93,33 @@ bool VtolLandDetector::_get_landed_state()
 	_was_in_air = !landed;
 
 	return landed;
+}
+
+bool VtolLandDetector::_get_freefall_state()
+{
+	if (_param_lndmc_ffall_thr.get() < 0.1f ||
+	    _param_lndmc_ffall_thr.get() > 10.0f) {	//if parameter is set to zero or invalid, disable free-fall detection.
+		return false;
+	}
+
+	if (_vehicle_acceleration.timestamp == 0) {
+		// _sensors is not valid yet, we have to assume we're not falling.
+		return false;
+	}
+
+	// norm of specific force. Should be close to 9.8 m/s^2 when landed.
+	const matrix::Vector3f accel{_vehicle_acceleration.xyz};
+
+	bool low_gravity_detected = (accel.norm() <  _param_lndmc_ffall_thr.get()); // true if falling or in a parabolic flight
+
+	bool airspeed_below_stall = true; // true per default to enable freefall detection on airspeed less vehicles
+
+	if (PX4_ISFINITE(_airspeed_validated.true_airspeed_m_s) && hrt_elapsed_time(&_airspeed_validated.timestamp) < 1_s) {
+
+		airspeed_below_stall = _airspeed_validated.true_airspeed_m_s < _param_aspd_stall.get();
+	}
+
+	return (low_gravity_detected && airspeed_below_stall);
 }
 
 } // namespace land_detector
