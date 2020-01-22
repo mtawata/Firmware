@@ -45,7 +45,7 @@
 #include <lib/perf/perf_counter.h>
 #include <lib/systemlib/mavlink_log.h>
 #include <lib/weather_vane/WeatherVane.hpp>
-#include <lib/hover_thrust_estimator/HoverThrustEstimator.hpp>
+#include <lib/hover_thrust_estimator/hover_thrust_estimator.hpp>
 #include <px4_platform_common/px4_config.h>
 #include <px4_platform_common/defines.h>
 #include <px4_platform_common/module.h>

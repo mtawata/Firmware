@@ -32,6 +32,6 @@
 ############################################################################
 
 px4_add_library(HoverThrustEstimator
-	HoverThrustEstimator.cpp
-	ZeroOrderHoverThrustEkf.cpp
+	hover_thrust_estimator.cpp
+	zero_order_hover_thrust_ekf.cpp
 )
