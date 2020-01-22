@@ -34,6 +34,7 @@
 /**
  * @file hover_thrust_estimator.hpp
  * @brief Interface class for a hover thrust estimator
+ * Convention is positive thrust, hover thrust and acceleration UP
  *
  * @author Mathieu Bresciani 	<brescianimathieu@gmail.com>
  */
@@ -56,8 +57,9 @@ public:
 
 	void handleParameterUpdate();
 	void update(float dt);
-	void setThrust(float thrust) { _thrust = -thrust; };
-	void setAccel(float accel) { _acc_z = -accel; };
+
+	void setThrust(float thrust) { _thrust = thrust; };
+	void setAccel(float accel) { _acc_z = accel; };
 
 	float getHoverThrustEstimate() const { return _hte.getHoverThrustEstimate(); }
 

@@ -43,7 +43,7 @@
  * x[k+1] = Ax[k] + v with v ~ N(0, Q)
  * y[k] = h(u, x) + w with w ~ N(0, R)
  *
- * Where the measurement model and corresponding Jocobian are:
+ * Where the measurement model and corresponding partial derivative (w.r.t. Th) are:
  * h(u, x) = g * T[k] / Th[k] - g
  * H[k] = -g * T[k] / Th[k]**2
  *
@@ -76,13 +76,13 @@ private:
 	float _R{0.5f};
 	float _dt{0.02f};
 
-	float computeH(float thrust);
-	float computeInnovVar(float H);
-	float computePredictedAccZ(float thrust);
-	float computeInnov(float acc_z, float thrust);
-	float computeKalmanGain(float H, float innov_var);
-	float computeInnovTestRatio(float innov, float innov_var);
-	bool isTestRatioPassing(float innov_test_ratio);
+	float computeH(float thrust) const;
+	float computeInnovVar(float H) const;
+	float computePredictedAccZ(float thrust) const;
+	float computeInnov(float acc_z, float thrust) const;
+	float computeKalmanGain(float H, float innov_var) const;
+	float computeInnovTestRatio(float innov, float innov_var) const;
+	bool isTestRatioPassing(float innov_test_ratio) const;
 
 	void updateState(float K, float innov);
 	void updateStateCovariance(float K, float H);

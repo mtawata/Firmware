@@ -81,45 +81,45 @@ void ZeroOrderHoverThrustEkf::fuseAccZ(const float acc_z, const float thrust)
 	updateMeasurementNoise(residual, H);
 }
 
-inline float ZeroOrderHoverThrustEkf::computeH(const float thrust)
+inline float ZeroOrderHoverThrustEkf::computeH(const float thrust) const
 {
 	return -CONSTANTS_ONE_G * thrust / (_hover_thr * _hover_thr);
 }
 
-inline float ZeroOrderHoverThrustEkf::computeInnovVar(const float H)
+inline float ZeroOrderHoverThrustEkf::computeInnovVar(const float H) const
 {
 	return math::max(H * _P * H + _R, _R);
 }
 
-float ZeroOrderHoverThrustEkf::computePredictedAccZ(const float thrust)
-{
-	return CONSTANTS_ONE_G * thrust / _hover_thr - CONSTANTS_ONE_G;
-}
-
-float ZeroOrderHoverThrustEkf::computeInnov(const float acc_z, const float thrust)
+float ZeroOrderHoverThrustEkf::computeInnov(const float acc_z, const float thrust) const
 {
 	const float predicted_acc_z = computePredictedAccZ(thrust);
 	return acc_z - predicted_acc_z;
 }
 
-inline float ZeroOrderHoverThrustEkf::computeKalmanGain(const float H, const float innov_var)
+float ZeroOrderHoverThrustEkf::computePredictedAccZ(const float thrust) const
+{
+	return CONSTANTS_ONE_G * thrust / _hover_thr - CONSTANTS_ONE_G;
+}
+
+inline float ZeroOrderHoverThrustEkf::computeKalmanGain(const float H, const float innov_var) const
 {
 	return _P * H / innov_var;
 }
 
-inline float ZeroOrderHoverThrustEkf::computeInnovTestRatio(const float innov, const float innov_var)
+inline float ZeroOrderHoverThrustEkf::computeInnovTestRatio(const float innov, const float innov_var) const
 {
 	return innov * innov / (_gate_size * _gate_size * innov_var);
 }
 
-inline bool ZeroOrderHoverThrustEkf::isTestRatioPassing(const float innov_test_ratio)
+inline bool ZeroOrderHoverThrustEkf::isTestRatioPassing(const float innov_test_ratio) const
 {
 	return innov_test_ratio < 1.f;
 }
 
 inline void ZeroOrderHoverThrustEkf::updateState(const float K, const float innov)
 {
-	_hover_thr = math::constrain(_hover_thr + K * innov, 0.1f, 0.8f);
+	_hover_thr = math::constrain(_hover_thr + K * innov, 0.1f, 0.9f);
 }
 
 inline void ZeroOrderHoverThrustEkf::updateStateCovariance(const float K, const float H)

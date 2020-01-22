@@ -610,7 +610,8 @@ MulticopterPositionControl::Run()
 				_hover_thrust_estimator.reset();
 
 			} else if (_takeoff.getTakeoffState() >= TakeoffState::flight) {
-				_hover_thrust_estimator.setAccel(_states.acceleration(2));
+				// Inform the hover thrust estimator about the measured vertical acceleration (positive acceleration is up)
+				_hover_thrust_estimator.setAccel(-_states.acceleration(2));
 				_hover_thrust_estimator.update(_dt);
 			}
 
@@ -662,7 +663,8 @@ MulticopterPositionControl::Run()
 			_flight_tasks.updateVelocityControllerIO(Vector3f(local_pos_sp.vx, local_pos_sp.vy, local_pos_sp.vz),
 					Vector3f(local_pos_sp.thrust));
 
-			_hover_thrust_estimator.setThrust(local_pos_sp.thrust[2]);
+			// Inform the hover thrust estimator about the current thrust (positive thrust is up)
+			_hover_thrust_estimator.setThrust(-local_pos_sp.thrust[2]);
 
 			vehicle_attitude_setpoint_s attitude_setpoint{};
 			attitude_setpoint.timestamp = time_stamp_now;
