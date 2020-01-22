@@ -611,7 +611,7 @@ MulticopterPositionControl::Run()
 
 			} else if (_takeoff.getTakeoffState() >= TakeoffState::flight) {
 				// Inform the hover thrust estimator about the measured vertical acceleration (positive acceleration is up)
-				_hover_thrust_estimator.setAccel(-_states.acceleration(2));
+				_hover_thrust_estimator.setAccel(_states.acceleration(2));
 				_hover_thrust_estimator.update(_dt);
 			}
 

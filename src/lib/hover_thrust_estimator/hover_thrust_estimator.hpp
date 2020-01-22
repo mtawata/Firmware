@@ -42,6 +42,10 @@
 #pragma once
 
 #include <px4_platform_common/module_params.h>
+#include <uORB/Publication.hpp>
+#include <uORB/topics/hover_thrust_estimator.h>
+#include <drivers/drv_hrt.h>
+
 #include "zero_order_hover_thrust_ekf.hpp"
 
 class HoverThrustEstimator : public ModuleParams
@@ -64,6 +68,8 @@ public:
 	float getHoverThrustEstimate() const { return _hte.getHoverThrustEstimate(); }
 
 private:
+	void publishStatus(ZeroOrderHoverThrustEkf::status &status);
+
 	ZeroOrderHoverThrustEkf _hte{};
 	float _acc_z{};
 	float _thrust{};
@@ -72,4 +78,6 @@ private:
 		(ParamFloat<px4::params::HTE_HT_NOISE>) _param_hte_ht_noise,
 		(ParamFloat<px4::params::HTE_ACC_NOISE>) _param_hte_acc_noise
 	)
+
+	uORB::Publication<hover_thrust_estimator_s> _hte_pub{ORB_ID(hover_thrust_estimator)};
 };

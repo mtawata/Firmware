@@ -58,15 +58,25 @@
 class ZeroOrderHoverThrustEkf
 {
 public:
+	struct status {
+		float hover_thrust;
+		float hover_thrust_var;
+		float innov;
+		float innov_var;
+		float innov_test_ratio;
+		float accel_noise_var;
+	};
+
 	ZeroOrderHoverThrustEkf() = default;
 	~ZeroOrderHoverThrustEkf() = default;
 
 	void predict(float _dt);
-	void fuseAccZ(float acc_z, float thrust);
+	status fuseAccZ(float acc_z, float thrust);
 	void setProcessNoiseStdDev(float process_noise) { _Q = process_noise * process_noise; }
 	void setMeasurementNoiseStdDev(float measurement_noise) { _R = measurement_noise * measurement_noise; }
 
 	float getHoverThrustEstimate() const { return _hover_thr; }
+
 private:
 	float _hover_thr{0.5f};
 
@@ -87,6 +97,8 @@ private:
 	void updateState(float K, float innov);
 	void updateStateCovariance(float K, float H);
 	void updateMeasurementNoise(float residual, float H);
+
+	status packStatus(float innov, float innov_var, float innov_test_ratio) const;
 
 	static constexpr float noise_learning_time_constant = 0.5f; // in seconds
 };

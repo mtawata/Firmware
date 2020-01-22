@@ -54,5 +54,20 @@ void HoverThrustEstimator::handleParameterUpdate()
 void HoverThrustEstimator::update(const float dt)
 {
 	_hte.predict(dt);
-	_hte.fuseAccZ(_acc_z, _thrust);
+	ZeroOrderHoverThrustEkf::status status = _hte.fuseAccZ(_acc_z, _thrust);
+
+	publishStatus(status);
+}
+
+void HoverThrustEstimator::publishStatus(ZeroOrderHoverThrustEkf::status &status)
+{
+	hover_thrust_estimator_s status_msg{};
+	status_msg.timestamp = hrt_absolute_time();
+	status_msg.hover_thrust = status.hover_thrust;
+	status_msg.hover_thrust_var = status.hover_thrust_var;
+	status_msg.accel_innov = status.innov;
+	status_msg.accel_innov_var = status.innov_var;
+	status_msg.accel_innov_test_ratio = status.innov_test_ratio;
+	status_msg.accel_noise_var = status.accel_noise_var;
+	_hte_pub.publish(status_msg);
 }

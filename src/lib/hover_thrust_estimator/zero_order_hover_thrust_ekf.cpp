@@ -49,7 +49,7 @@ void ZeroOrderHoverThrustEkf::predict(const float dt)
 	_dt = dt;
 }
 
-void ZeroOrderHoverThrustEkf::fuseAccZ(const float acc_z, const float thrust)
+ZeroOrderHoverThrustEkf::status ZeroOrderHoverThrustEkf::fuseAccZ(const float acc_z, const float thrust)
 {
 	const float H = computeH(thrust);
 	const float innov_var = computeInnovVar(H);
@@ -57,28 +57,17 @@ void ZeroOrderHoverThrustEkf::fuseAccZ(const float acc_z, const float thrust)
 	const float K = computeKalmanGain(H, innov_var);
 	const float innov_test_ratio = computeInnovTestRatio(innov, innov_var);
 
-	printf("AZ = %.3f\tthr = %.3f\tH = %.3f\tinnov_var = %.3f\tinnov = %.3f\tK = %.3f\ttest_ratio = %.3f\n",
-	       (double)acc_z,
-	       (double)thrust,
-	       (double)H,
-	       (double)innov_var,
-	       (double)innov,
-	       (double)K,
-	       (double)innov_test_ratio);
-
 	float residual = innov;
 
 	if (isTestRatioPassing(innov_test_ratio)) {
 		updateState(K, innov);
 		updateStateCovariance(K, H);
 		residual = computeInnov(acc_z, thrust); // residual != innovation since the hover thrust changed
-		printf("estimated hover thrust: %.3f\t std_dev = %.3fres = %.3f\n",
-		       (double)_hover_thr,
-		       (double)sqrtf(_P),
-		       (double)residual);
 	}
 
 	updateMeasurementNoise(residual, H);
+
+	return packStatus(innov, innov_var, innov_test_ratio);
 }
 
 inline float ZeroOrderHoverThrustEkf::computeH(const float thrust) const
@@ -131,4 +120,19 @@ inline void ZeroOrderHoverThrustEkf::updateMeasurementNoise(const float residual
 {
 	const float alpha = _dt / (noise_learning_time_constant + _dt);
 	_R = math::constrain((1.f - alpha) * _R  + alpha * (residual * residual + H * _P * H), 1e-4f, 10.f);
+}
+
+inline ZeroOrderHoverThrustEkf::status ZeroOrderHoverThrustEkf::packStatus(const float innov, const float innov_var,
+		const float innov_test_ratio) const
+{
+	// Send back status for logging
+	status ret{};
+	ret.hover_thrust = _hover_thr;
+	ret.hover_thrust_var = _P;
+	ret.innov = innov;
+	ret.innov_var = innov_var;
+	ret.innov_test_ratio = innov_test_ratio;
+	ret.accel_noise_var = _R;
+
+	return ret;
 }
