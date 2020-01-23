@@ -1045,19 +1045,21 @@ void Ekf2::Run()
 			optical_flow_s optical_flow;
 
 			if (_optical_flow_sub.copy(&optical_flow)) {
-				flow_message flow;
-				flow.flowdata(0) = optical_flow.pixel_flow_x_integral;
-				flow.flowdata(1) = optical_flow.pixel_flow_y_integral;
+				flowSample flow;
+				// NOTE: the EKF uses the reverse sign convention to the flow sensor. EKF assumes positive LOS rate
+				// is produced by a RH rotation of the image about the sensor axis.
+				flow.flow_xy_rad(0) = -optical_flow.pixel_flow_x_integral;
+				flow.flow_xy_rad(1) = -optical_flow.pixel_flow_y_integral;
+				flow.gyro_xyz(0) = -optical_flow.gyro_x_rate_integral;
+				flow.gyro_xyz(1) = -optical_flow.gyro_y_rate_integral;
+				flow.gyro_xyz(2) = -optical_flow.gyro_z_rate_integral;
 				flow.quality = optical_flow.quality;
-				flow.gyrodata(0) = optical_flow.gyro_x_rate_integral;
-				flow.gyrodata(1) = optical_flow.gyro_y_rate_integral;
-				flow.gyrodata(2) = optical_flow.gyro_z_rate_integral;
-				flow.dt = optical_flow.integration_timespan;
+				flow.dt = 1e-6f * (float)optical_flow.integration_timespan;
 
 				if (PX4_ISFINITE(optical_flow.pixel_flow_y_integral) &&
 				    PX4_ISFINITE(optical_flow.pixel_flow_x_integral)) {
 
-					_ekf.setOpticalFlowData(optical_flow.timestamp, &flow);
+					_ekf.setOpticalFlowData(flow);
 				}
 
 				// Save sensor limits reported by the optical flow sensor
