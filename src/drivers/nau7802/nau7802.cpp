@@ -181,7 +181,7 @@ NAU7802::collect()
 	int32_t valueShifted = (int32_t)(valueRaw << 8);
 	int32_t value = (valueShifted >> 8);
 
-	PX4_INFO("collected: %d, %x%x%x", value, buf[0], buf[1], buf[2]);
+	// PX4_INFO("collected: %d, %x%x%x", value, buf[0], buf[1], buf[2]);
 
 	float processed_value = (value - _zero_offset)/ _cal_factor;
 
