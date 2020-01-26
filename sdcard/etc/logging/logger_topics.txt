@@ -1,0 +1,46 @@
+cpuload, 200
+system_power, 1000
+
+ekf_gps_drift
+ekf_gps_position
+estimator_innovation_test_ratios
+estimator_innovation_variances
+estimator_innovations
+estimator_status
+
+input_rc
+manual_control_setpoint
+
+telemetry_status, 5000
+tecs_status
+
+vehicle_air_data
+vehicle_angular_velocity
+vehicle_attitude
+vehicle_global_position
+vehicle_gps_position
+vehicle_land_detected, 200
+vehicle_local_position
+vehicle_magnetometer
+vehicle_odometry
+vehicle_status, 200
+
+wind_estimate, 200
+
+airspeed
+airspeed_validated
+differential_pressure
+
+sensor_bias
+sensor_combined
+sensor_correction
+sensor_selection
+
+sensor_accel
+sensor_accel_status, 200
+sensor_baro
+sensor_gyro
+sensor_gyro_status, 200
+sensor_mag
+
+nau7802_measurement

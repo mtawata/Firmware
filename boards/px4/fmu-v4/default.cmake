@@ -38,6 +38,7 @@ px4_add_board(
 		lights/rgbled_ncp5623c
 		magnetometer # all available magnetometer drivers
 		mkblctrl
+		nau7802
 		optical_flow # all available optical flow drivers
 		#osd
 		pca9685
